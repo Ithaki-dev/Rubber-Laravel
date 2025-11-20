@@ -15,6 +15,29 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @can('admin')
+                        <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.*')">
+                            {{ __('Administrar Usuarios') }}
+                        </x-nav-link>
+                    @endcan
+
+                    @if(auth()->user()->role === 'driver')
+                        <x-nav-link :href="route('vehicles.index')" :active="request()->routeIs('vehicles.*')">
+                            {{ __('Mis Vehículos') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('rides.index')" :active="request()->routeIs('rides.*')">
+                            {{ __('Mis Rides') }}
+                        </x-nav-link>
+                    @endif
+
+                    <x-nav-link :href="route('reservations.index')" :active="request()->routeIs('reservations.*')">
+                        {{ __('Mis Reservas') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('rides.search')" :active="request()->routeIs('rides.search')">
+                        {{ __('Buscar Rides') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -69,6 +92,29 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            @can('admin')
+                <x-responsive-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.*')">
+                    {{ __('Administrar Usuarios') }}
+                </x-responsive-nav-link>
+            @endcan
+
+            @if(auth()->user()->role === 'driver')
+                <x-responsive-nav-link :href="route('vehicles.index')" :active="request()->routeIs('vehicles.*')">
+                    {{ __('Mis Vehículos') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('rides.index')" :active="request()->routeIs('rides.*')">
+                    {{ __('Mis Rides') }}
+                </x-responsive-nav-link>
+            @endif
+
+            <x-responsive-nav-link :href="route('reservations.index')" :active="request()->routeIs('reservations.*')">
+                {{ __('Mis Reservas') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('rides.search')" :active="request()->routeIs('rides.search')">
+                {{ __('Buscar Rides') }}
             </x-responsive-nav-link>
         </div>
 

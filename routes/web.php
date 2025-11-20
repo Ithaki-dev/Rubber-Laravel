@@ -30,6 +30,11 @@ Route::middleware('auth')->group(function () {
     // Admin routes
     Route::middleware('can:admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/users', [\App\Http\Controllers\AdminController::class, 'users'])->name('users');
+        Route::get('/users/create', [\App\Http\Controllers\AdminController::class, 'create'])->name('users.create');
+        Route::post('/users', [\App\Http\Controllers\AdminController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [\App\Http\Controllers\AdminController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [\App\Http\Controllers\AdminController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [\App\Http\Controllers\AdminController::class, 'destroy'])->name('users.destroy');
         Route::patch('/users/{user}/toggle-status', [\App\Http\Controllers\AdminController::class, 'toggleStatus'])->name('users.toggle-status');
     });
 });

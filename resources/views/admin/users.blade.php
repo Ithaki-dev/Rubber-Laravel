@@ -1,8 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Gestión de Usuarios') }}
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Gestión de Usuarios') }}
+            </h2>
+            <a href="{{ route('admin.users.create') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Crear Usuario
+            </a>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -43,7 +48,9 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            {{ $user->role === 'driver' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800' }}">
+                                            {{ $user->role === 'admin' ? 'bg-purple-100 text-purple-800' : '' }}
+                                            {{ $user->role === 'driver' ? 'bg-blue-100 text-blue-800' : '' }}
+                                            {{ $user->role === 'passenger' ? 'bg-green-100 text-green-800' : '' }}">
                                             {{ ucfirst($user->role) }}
                                         </span>
                                     </td>
@@ -56,13 +63,27 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="text-indigo-600 hover:text-indigo-900">
-                                                {{ $user->status === 'active' ? 'Desactivar' : 'Activar' }}
-                                            </button>
-                                        </form>
+                                        <div class="flex gap-2">
+                                            <a href="{{ route('admin.users.edit', $user) }}" class="text-indigo-600 hover:text-indigo-900">
+                                                Editar
+                                            </a>
+                                            <form action="{{ route('admin.users.toggle-status', $user) }}" method="POST" class="inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" class="text-yellow-600 hover:text-yellow-900">
+                                                    {{ $user->status === 'active' ? 'Desactivar' : 'Activar' }}
+                                                </button>
+                                            </form>
+                                            @if($user->id !== auth()->id())
+                                                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar este usuario?');" class="inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
