@@ -40,6 +40,14 @@ class RideController extends Controller
      */
     public function store(Request $request)
     {
+        // Verify vehicle belongs to user first
+        $vehicle = Vehicle::where('id', $request->vehicle_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Calculate max available seats (vehicle capacity - 1 for driver)
+        $maxSeats = $vehicle->capacity - 1;
+
         $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
             'name' => 'required|string|max:255',
@@ -47,13 +55,10 @@ class RideController extends Controller
             'destination' => 'required|string|max:255',
             'departure_time' => 'required|date|after:now',
             'cost' => 'required|numeric|min:0',
-            'seats' => 'required|integer|min:1|max:50',
+            'seats' => "required|integer|min:1|max:{$maxSeats}",
+        ], [
+            'seats.max' => "El número de asientos no puede exceder {$maxSeats} (capacidad del vehículo menos el chofer).",
         ]);
-
-        // Verify vehicle belongs to user
-        $vehicle = Vehicle::where('id', $request->vehicle_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
 
         Auth::user()->rides()->create([
             'vehicle_id' => $request->vehicle_id,
@@ -95,6 +100,14 @@ class RideController extends Controller
     {
         $this->authorize('update', $ride);
 
+        // Verify vehicle belongs to user
+        $vehicle = Vehicle::where('id', $request->vehicle_id)
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        // Calculate max available seats (vehicle capacity - 1 for driver)
+        $maxSeats = $vehicle->capacity - 1;
+
         $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
             'name' => 'required|string|max:255',
@@ -102,13 +115,10 @@ class RideController extends Controller
             'destination' => 'required|string|max:255',
             'departure_time' => 'required|date|after:now',
             'cost' => 'required|numeric|min:0',
-            'seats' => 'required|integer|min:1|max:50',
+            'seats' => "required|integer|min:1|max:{$maxSeats}",
+        ], [
+            'seats.max' => "El número de asientos no puede exceder {$maxSeats} (capacidad del vehículo menos el chofer).",
         ]);
-
-        // Verify vehicle belongs to user
-        $vehicle = Vehicle::where('id', $request->vehicle_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
 
         $ride->update([
             'vehicle_id' => $request->vehicle_id,

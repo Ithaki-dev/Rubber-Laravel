@@ -63,11 +63,12 @@
                             </div>
 
                             <!-- Seats -->
-                            <div>
-                                <x-input-label for="seats" value="Número de Espacios" />
-                                <x-text-input id="seats" class="block mt-1 w-full" type="number" name="seats" :value="old('seats', $ride->seats)" required min="1" max="50" />
-                                <x-input-error :messages="$errors->get('seats')" class="mt-2" />
-                            </div>
+                        <div>
+                            <x-input-label for="seats" value="Asientos Disponibles" />
+                            <x-text-input id="seats" class="block mt-1 w-full" type="number" name="seats" :value="old('seats', $ride->seats)" required min="1" />
+                            <p class="text-sm text-gray-500 mt-1">Máximo: capacidad del vehículo - 1 (chofer)</p>
+                            <x-input-error :messages="$errors->get('seats')" class="mt-2" />
+                        </div>
                         </div>
 
                         <div class="flex items-center justify-end mt-4 gap-4">
