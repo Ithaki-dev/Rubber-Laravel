@@ -12,8 +12,9 @@ class PublicController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Ride::with('user', 'vehicle')
-            ->where('departure_time', '>', now());
+        $query = Ride::with(['vehicle', 'reservations'])
+            ->where('departure_time', '>', now())
+            ->whereRaw('seats > (SELECT COUNT(*) FROM reservations WHERE reservations.ride_id = rides.id AND reservations.status = "accepted")');
 
         // Filter by origin
         if ($request->filled('origin')) {
@@ -27,11 +28,13 @@ class PublicController extends Controller
 
         // Sort
         $sortBy = $request->get('sort', 'departure_time');
+        $sortOrder = $request->get('order', 'asc');
+        
         if (in_array($sortBy, ['departure_time', 'origin', 'destination', 'cost'])) {
-            $query->orderBy($sortBy);
+            $query->orderBy($sortBy, $sortOrder);
         }
 
-        $rides = $query->paginate(12);
+        $rides = $query->paginate(12)->withQueryString();
 
         return view('public.rides', compact('rides'));
     }
@@ -41,7 +44,20 @@ class PublicController extends Controller
      */
     public function show(Ride $ride)
     {
-        $ride->load('vehicle', 'user');
-        return view('public.ride-details', compact('ride'));
+        $ride->load('vehicle');
+        
+        // Check if user is authenticated and is a passenger
+        $canReserve = auth()->check() && auth()->user()->role === 'passenger';
+        
+        // Check if user already has a reservation for this ride
+        $hasReservation = false;
+        if (auth()->check()) {
+            $hasReservation = $ride->reservations()
+                ->where('passenger_id', auth()->id())
+                ->whereIn('status', ['pending', 'accepted'])
+                ->exists();
+        }
+        
+        return view('public.ride-details', compact('ride', 'canReserve', 'hasReservation'));
     }
 }
