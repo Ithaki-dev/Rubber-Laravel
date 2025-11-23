@@ -82,14 +82,12 @@
                                             <div class="flex gap-2">
                                                 <form action="{{ route('reservations.accept', $reservation) }}" method="POST">
                                                     @csrf
-                                                    @method('PATCH')
                                                     <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded text-sm">
                                                         Aceptar
                                                     </button>
                                                 </form>
                                                 <form action="{{ route('reservations.reject', $reservation) }}" method="POST">
                                                     @csrf
-                                                    @method('PATCH')
                                                     <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-sm">
                                                         Rechazar
                                                     </button>
